@@ -1,0 +1,62 @@
+This is essentially what I want it to do:
+- function essentially like an audio Chromecast, but allow music from different sources (files, Pandora, Youtube, Google Play, etc) to be on the playlist
+
+so it needs to be organized like so:
+- one central server
+- innumerable clients (can assume on same wifi network)
+- uses speakers/sound output of server. can maybe be changed later
+- uses chrome tabs for Pandora and Google Play
+- client will send request with name of service and possibly credentials (for Pandora, etc)
+	- or maybe the server will have credentials stored
+- important, major difference: will allow a streaming playlist service (like pandora or google play) to fill in when there is nothing else in the queue
+	- when something is added to the queue, the song currently playing will be allowed to finish, and the streaming service will be paused until the playlist
+	  empties again
+- unlike the Chromecast, deleting the queue will not be possible from the client side. This will reduce the incidence of accidental and douchey deletion
+	that has been observed with Chromecast use
+	- the server, however, will be able to delete the queue, or skip an item, or delete a single item
+	- if this project goes far enough, implementing some sort of voting system that could take a certain number of votes to kick an item or bar a person from
+		contributing to the queue could be possible
+		
+So the server code will be organized like this:
+- one main thread. listens for connections and commands
+- one thread per command, to add it to the queue and do any necessary loading or setup
+- one play thread that handles playing things and making sure the setup was properly achieved (for example, if a youtube video hasn't started loading yet,
+	don't play it)
+	
+	
+classes:
+- larger tab class
+	= player type
+	= tab id somehow
+	
+	-subclasses:
+		- pandora:
+			= username
+			= password (needs to be secured and only temporarily stored)
+			= station
+		- google play:
+			= username
+			= password
+			= song desired (link?)
+		- youtube:
+			= link
+		- local file:
+			= location
+			
+input:
+	pandora stationTitle username
+	(server will prompt for password and hide it somehow)
+	password
+	
+	
+	
+	googlePlay songTitle username
+	(server will prompt for password and hide it somehow)
+	password
+	
+	ACTUALLY i believe with google play anyone with credentials gets access
+	so we can have a provideCredentials function where we log in once, destroy the password, and serve songs from there thereafter
+	
+	youtube perfectLink
+	
+	local c:/musicLocation
